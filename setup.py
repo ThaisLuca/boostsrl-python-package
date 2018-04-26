@@ -1,19 +1,22 @@
-'''
-Setup file for boostsrl
+# Copyright (c) 2017-2018 StARLinG Lab
 
-Refer to https://github.com/batflyer/boostsrl-python-package
-'''
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+
+# See <http://www.gnu.org/licenses/> or the license in the base of
+# the repository at <https://github.com/starling-lab/boostsrl-python-package>
 
 from setuptools import setup, find_packages
-from codecs import open
 from os import path
 
 here = path.abspath(path.dirname(__file__))
-
-# Description from README
-
-#with open(path.join(here, 'README.md'), encoding='utf-8') as f:
-#    long_description = f.read()
 
 setup(
     name='boostsrl',
@@ -22,10 +25,8 @@ setup(
     author_email='alexander@batflyer.net',
     version='1.0.1',
     description='Python wrappers for using BoostSRL jar files.',
-    #long_description=long_description,
-    #long_description=open('README.md').read(),
 
-    # boostsrl_java stores files in the user's home directory by default.
+    # boostsrl_data stores files in the user's home directory.
     include_package_data = True,
     data_files=[(path.expanduser('~') + '/.boostsrl_data', ['boostsrl/v1-0.jar',
                                                             'boostsrl/auc.jar']),
@@ -33,8 +34,8 @@ setup(
                 (path.expanduser('~') + '/.boostsrl_data/test', ['boostsrl/test/test_bk.txt'])],
 
     # Project's main homepage.
-    url='https://github.com/batflyer/boostsrl-python-package',
-    download_url="https://github.com/batflyer/boostsrl-python-package/archive/0.3.tar.gz",
+    url='https://github.com/starling-lab/boostsrl-python-package',
+    download_url="https://github.com/starling-lab/boostsrl-python-package/archive/v1.0.1.tar.gz",
 
     # License
     license='GPL-3.0',
@@ -55,7 +56,7 @@ setup(
         'Operating System :: POSIX :: Linux',
 
         # Supported Python Versions
-        # Check build status: https://travis-ci.org/batflyer/boostsrl-python-package
+        # Check build status: https://travis-ci.org/starling-lab/boostsrl-python-package
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
