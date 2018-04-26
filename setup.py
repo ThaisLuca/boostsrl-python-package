@@ -20,7 +20,7 @@ setup(
     packages=['boostsrl'],
     author='Alexander L. Hayes (batflyer)',
     author_email='alexander@batflyer.net',
-    version='0.3',
+    version='1.0.1',
     description='Python wrappers for using BoostSRL jar files.',
     #long_description=long_description,
     #long_description=open('README.md').read(),
@@ -72,7 +72,7 @@ setup(
     # Relevant keywords (from boost-starai/BoostSRL)
     keywords='machine-learning-algorithms machine-learning statistical-learning pattern-classification artificial-intelligence',
 
-    install_requires = ['subprocess32', 'graphviz'],
+    install_requires = [],
     extras_require={
         'test': ['coverage']
     }
