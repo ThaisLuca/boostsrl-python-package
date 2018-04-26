@@ -43,7 +43,7 @@ def example_data(example):
         return ['friends(+Person, -Person).', 'friends(-Person, +Person).', 'smokes(+Person).', 'cancer(+Person).']
     else:
         raise(Exception('Attempted to use sample data that does not exist.'))
-    
+
 def call_process(call):
     '''Create a subprocess and wait for it to finish. Error out if errors occur.'''
     try:
@@ -63,7 +63,7 @@ def inspect_mode_syntax(example):
         raise(Exception('Error when checking background knowledge; incorrect syntax: ' + example + \
                         '\nBackground knowledge should only contain letters and numbers, of the form: ' + \
                         'predicate(+var1, -var2).'))
-    
+
 def inspect_example_syntax(example):
     '''Uses a regular expression to check whether all of the examples in a list are in the correct form.
        Example:
@@ -72,7 +72,7 @@ def inspect_example_syntax(example):
     '''
     if not exam_re.search(example):
         raise(Exception('Error when checking example; incorrect syntax: ' + example))
-    
+
 def write_to_file(content, path):
     '''Takes a list (content) and a path/file (path) and writes each line of the list to the file location.'''
     with open(path, 'w') as f:
@@ -99,7 +99,7 @@ def save_model(model):
 '''
 
 class modes(object):
-    
+
     def __init__(self, background, target, bridgers=None, precomputes=None, loadAllLibraries=False,
                  useStdLogicVariables=False, usePrologVariables=False,
                  recursion=False, lineSearch=False, resampleNegs=False,
@@ -111,7 +111,7 @@ class modes(object):
 
         self.bridgers = bridgers
         self.precomputes = precomputes
-        
+
         self.loadAllLibraries = loadAllLibraries
         self.useStdLogicVariables = useStdLogicVariables
         self.usePrologVariables = usePrologVariables
@@ -129,7 +129,7 @@ class modes(object):
         #self.queryPred = 'advisedby/2'
 
         # Many of the arguments in the modes object are optional this shows us the values of the ones that are neither false nor none
-        
+
         types = {
             'background should be a list.': isinstance(background, list),
             'target should be a list.': isinstance(target, list),
@@ -149,12 +149,12 @@ class modes(object):
             'minLCTrees should be an int.': isinstance(minLCTrees, int) or minLCTrees is None,
             'incrLCTrees should be an int.': isinstance(incrLCTrees, int) or incrLCTrees is None
         }
-        
+
         # Force type checking for input validation Issue #5
         for type_check in types:
             if not types[type_check]:
                 raise(TypeError('Error when checking type: ' +  type_check))
-        
+
         relevant = [[attr, value] for attr, value in self.__dict__.items() if (value is not False) and (value is not None)]
         self.relevant = relevant
 
@@ -179,7 +179,7 @@ class modes(object):
         if self.bridgers is not None:
             for bridger in self.bridgers:
                 background_knowledge.append('bridger: ' + bridger)
-                
+
         if self.precomputes is not None:
             for precompute in self.precomputes:
                 background_knowledge.append(self.precomputes[precompute])
@@ -188,9 +188,9 @@ class modes(object):
         # Write the newly created background_knowledge to a file: background.txt
         self.background_knowledge = background_knowledge
         write_to_file(background_knowledge, 'background.txt')
-            
+
 class train(object):
-    
+
     def __init__(self, background, train_pos, train_neg, train_facts, save=False, advice=False, softm=False, alpha=0.5, beta=-2, trees=10):
         '''
         background: list of strings representing background knowledge.
@@ -216,7 +216,7 @@ class train(object):
         write_to_file(self.train_pos, 'boostsrl/train/train_pos.txt')
         write_to_file(self.train_neg, 'boostsrl/train/train_neg.txt')
         write_to_file(self.train_facts, 'boostsrl/train/train_facts.txt')
-        
+
         CALL = '(cd boostsrl; java -jar v1-0.jar -l -train train/ -target ' + ','.join(self.target) + \
                ' -trees ' + str(self.trees) + ' > train_output.txt 2>&1)'
         call_process(CALL)
@@ -288,13 +288,13 @@ class test(object):
         CALL = '(cd boostsrl; java -jar v1-0.jar -i -model train/models/ -test test/ -target ' + \
                ','.join(self.target) + ' -trees ' + str(trees) + ' -aucJarPath . > test_output.txt 2>&1)'
         call_process(CALL)
-    
+
     def summarize_results(self):
         with open('boostsrl/test_output.txt', 'r') as f:
             text = f.read()
         line = re.findall(r'%   AUC ROC.*|%   AUC PR.*|%   CLL.*|%   Precision.*|%   Recall.*|%   F1.*', text)
         line = [word.replace(' ','').replace('\t','').replace('%','').replace('atthreshold=',',') for word in line]
-        
+
         results = {
             'AUC ROC': line[0][line[0].index('=')+1:],
             'AUC PR': line[1][line[1].index('=')+1:],
@@ -308,18 +308,18 @@ class test(object):
     def float_split(self, line):
         '''Returns a list where the first item is a string and the second is a float.
            Used when returning inference results.
-        
+
         Example:
            >>> test.float_split('target(pred1, pred2, pred3). 0.85691')
            ['target(pred1, pred2, pred3).', 0.85691]'''
         intermediate = line.rsplit(None, 1)
         return [intermediate[0], float(intermediate[1])]
-        
+
     def inference_results(self, target):
         '''Converts BoostSRL results into a Python dictionary.'''
         results_file = 'boostsrl/test/results_' + target + '.db'
         inference_dict = {}
-        
+
         with open(results_file, 'r') as f:
             for line in f.read().splitlines():
                 full = self.float_split(line)
@@ -327,4 +327,3 @@ class test(object):
                 value_regression = full[1]
                 inference_dict[key_predicate] = value_regression
         return inference_dict
-
