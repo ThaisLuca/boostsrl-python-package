@@ -187,7 +187,7 @@ class modes(object):
 
         # Write the newly created background_knowledge to a file: background.txt
         self.background_knowledge = background_knowledge
-        write_to_file(background_knowledge, 'background.txt')
+        write_to_file(background_knowledge, 'boostsrl/background.txt')
             
 class train(object):
     
@@ -213,6 +213,11 @@ class train(object):
         for example in self.train_facts:
             inspect_example_syntax(example)
 
+        # Create train folder if it does not exist
+        os.makedirs('boostsrl/train', exist_ok=True)
+        # Write train_bk
+        write_to_file(['import: "../background.txt".'], 'boostsrl/train/train_bk.txt')
+        
         write_to_file(self.train_pos, 'boostsrl/train/train_pos.txt')
         write_to_file(self.train_neg, 'boostsrl/train/train_neg.txt')
         write_to_file(self.train_facts, 'boostsrl/train/train_facts.txt')
@@ -279,6 +284,11 @@ class test(object):
         os.remove('boostsrl/test/AUC/.aucTemp.txt.lock')
 
     def __init__(self, model, test_pos, test_neg, test_facts, trees=10):
+        # Create train folder if it does not exist
+        os.makedirs('boostsrl/test', exist_ok=True)
+        # Write test_bk
+        write_to_file(['import: "../background.txt".'], 'boostsrl/test/test_bk.txt')
+        
         write_to_file(test_pos, 'boostsrl/test/test_pos.txt')
         write_to_file(test_neg, 'boostsrl/test/test_neg.txt')
         write_to_file(test_facts, 'boostsrl/test/test_facts.txt')
