@@ -31,7 +31,7 @@
 * The latest stable build can be installed with pip:
 
   ```bash
-  $ pip install git+git://github.com/starling-lab/boostsrl-python-package.git
+  $ pip install git+git://github.com/rodrigoazs/boostsrl-python-package.git
   ```
 
 ### Basic Usage

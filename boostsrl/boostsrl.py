@@ -1,10 +1,12 @@
 '''
    Python package that makes it easier to write code that uses the BoostSRL java package, without having
    to create the data then run the jar manually.
+   The code was modified to be able to learn parameteres and refine trees.
 
    Name:         boostsrl.py
    Author:       Alexander L. Hayes
-   Updated:      September 18, 2017
+   Modifier by:  Rodrigo Azevedo
+   Updated:      July 22, 2017
    License:      GPLv3
 '''
 
@@ -21,6 +23,22 @@ else:
 # Mode definitions and predicate logic examples can be verified with regular expressions.
 mode_re = re.compile(r'[a-zA-Z0-9]*\(((\+|\-|\#)[a-zA-Z0-9]*,( )*)*(\+|\-|\#)[a-zA-Z0-9]*\)\.')
 exam_re = re.compile(r'[a-zA-Z0-9]*\(([a-zA-Z0-9]*,( )*)*[a-zA-Z0-9]*\)\.')
+
+def results_to_float(string):
+    '''Results can be printed with comma format.'''
+    return float(string.replace(',','.'))
+    
+def examples_to_float(string):
+    '''Results can be printed with comma format.'''
+    return int(string.replace('.',''))
+    
+def time_to_float(string):
+    '''Results can be printed with comma format.'''
+    if '.' in string and ',' in string:
+        return float(string.replace('.','').replace(',','.'))
+    elif ',' in string:
+        return float(string.replace(',','.'))
+    return float(string)
 
 def example_data(example):
     '''For demo purposes, include some sample data.
@@ -191,7 +209,7 @@ class modes(object):
             
 class train(object):
     
-    def __init__(self, background, train_pos, train_neg, train_facts, refine=None, save=False, advice=False, softm=False, alpha=0.5, beta=-2, trees=10):
+    def __init__(self, background, train_pos, train_neg, train_facts, refine=None, save=False, advice=False, softm=False, alpha=0.5, beta=-2, trees=1):
         '''
         background: list of strings representing background knowledge.
         '''
@@ -262,16 +280,17 @@ class train(object):
     def training_time_to_float(self, splitline):
         '''Convet the string representing training time into a float representing total seconds.'''
         seconds = []
+        # time with comma, is this supposed to happen?
         if 'milliseconds' in splitline:
-            seconds.append((float(splitline[splitline.index('milliseconds') - 1])) / 1000)
+            seconds.append((time_to_float(splitline[splitline.index('milliseconds') - 1])) / 1000)
         if 'seconds' in splitline:
-            seconds.append(float(splitline[splitline.index('seconds') - 1]))
+            seconds.append(time_to_float(splitline[splitline.index('seconds') - 1]))
         if 'minutes' in splitline:
-            seconds.append(float(splitline[splitline.index('minutes') - 1]) * 60)
+            seconds.append(time_to_float(splitline[splitline.index('minutes') - 1]) * 60)
         if 'hours' in splitline:
-            seconds.append(float(splitline[splitline.index('hours') - 1]) * 3600)
+            seconds.append(time_to_float(splitline[splitline.index('hours') - 1]) * 3600)
         if 'days' in splitline:
-            seconds.append(float(splitline[splitline.index('days') - 1]) * 86400)
+            seconds.append(time_to_float(splitline[splitline.index('days') - 1]) * 86400)
         return sum(seconds)
 
     def traintime(self):
@@ -295,13 +314,14 @@ class train(object):
            and returns it as objects with nodes, std devs and number of examples reached.'''
         def get_results(groups):
             #std dev, neg, pos
-            ret = [float(groups[0].replace(',','.')), 0, 0]
-            match = re.findall(r'\#pos=(\d*).*', groups[1])
+            # std dev with comma, is this supposed to happen?
+            ret = [results_to_float(groups[0]), 0, 0]
+            match = re.findall(r'\#pos=([\d.]*).*', groups[1])
             if match:
-                ret[2] = int(match[0].replace('.',''))
-            match = re.findall(r'\#neg=(\d*)', groups[1])
+                ret[2] = examples_to_float(match[0])
+            match = re.findall(r'\#neg=([\d.]*)', groups[1])
             if match:
-                ret[1] = int(match[0].replace('.',''))
+                ret[1] = examples_to_float(match[0])
             return ret
     
         lines = self.get_will_produced_tree()
@@ -321,16 +341,17 @@ class train(object):
                 nodes[','.join(current)] = match.group(1).strip()
                 stack.append(current+['false'])
                 current.append('true')
-            match = re.match('.*then return [\d.-]*;\s*\/\/\s*std dev\s*=\s*([\d,.\-e]*),.*\/\*\s*(.*)\s*\*\/.*', line)
+            match = re.match('.*[then|else] return [\d.-]*;\s*\/\/\s*std dev\s*=\s*([\d,.\-e]*),.*\/\*\s*(.*)\s*\*\/.*', line)
             if match:
                 leaves[','.join(current)] = get_results(match.groups()) #float(match.group(1))
                 if len(stack):
                     current = stack.pop()
-            match = re.match('.*else return [\d.-]*;\s*\/\/\s*std dev\s*=\s*([\d,.\-e]*),.*\/\*\s*(.*)\s*\*\/.*', line)
-            if match:
-                leaves[','.join(current)] = get_results(match.groups()) #float(match.group(1))
-                if len(stack):
-                    current = stack.pop()
+            else:
+                match = re.match('.*[then|else] return [\d.-]*;\s*\/\/\s*.*\/\*\s*(.*)\s*\*\/.*', line)
+                if match:
+                    leaves[','.join(current)] = get_results(['0'] + list(match.groups())) #float(match.group(1))
+                    if len(stack):
+                        current = stack.pop()
         return [target, nodes, leaves]
 
 class test(object):
@@ -340,7 +361,7 @@ class test(object):
         print('Found lock file boostsrl/test/AUC/.aucTemp.txt.lock, removing it:')
         os.remove('boostsrl/test/AUC/.aucTemp.txt.lock')
 
-    def __init__(self, model, test_pos, test_neg, test_facts, trees=10):
+    def __init__(self, model, test_pos, test_neg, test_facts, trees=1):
         # Create train folder if it does not exist
         os.makedirs('boostsrl/test', exist_ok=True)
         # Write test_bk
@@ -360,15 +381,15 @@ class test(object):
         with open('boostsrl/test_output.txt', 'r') as f:
             text = f.read()
         line = re.findall(r'%   AUC ROC.*|%   AUC PR.*|%   CLL.*|%   Precision.*|%   Recall.*|%   F1.*', text)
-        line = [word.replace(' ','').replace('\t','').replace('%','').replace('atthreshold=',',') for word in line]
+        line = [word.replace(' ','').replace('\t','').replace('%','').replace('atthreshold=',';') for word in line]
         
         results = {
-            'AUC ROC': line[0][line[0].index('=')+1:],
-            'AUC PR': line[1][line[1].index('=')+1:],
-            'CLL': line[2][line[2].index('=')+1:],
-            'Precision': line[3][line[3].index('=')+1:],
-            'Recall': line[4][line[4].index('=')+1:],
-            'F1': line[5][line[5].index('=')+1:]
+            'AUC ROC': results_to_float(line[0][line[0].index('=')+1:]),
+            'AUC PR': results_to_float(line[1][line[1].index('=')+1:]),
+            'CLL': results_to_float(line[2][line[2].index('=')+1:]),
+            'Precision': [results_to_float(i) for i in line[3][line[3].index('=')+1:].split(';')],
+            'Recall': results_to_float(line[4][line[4].index('=')+1:]),
+            'F1': results_to_float(line[5][line[5].index('=')+1:])
         }
         return results
 
@@ -395,3 +416,33 @@ class test(object):
                 inference_dict[key_predicate] = value_regression
         return inference_dict
 
+    def get_testing_time(self):
+        '''Return the testing time as a float representing the total number of seconds seconds.'''
+        with open('boostsrl/test_output.txt', 'r') as f:
+            text = f.read()
+        line = re.findall(r'% Total inference time \(\d* trees\):.*', text)
+        # Remove the last character "." from the line and split it on spaces.
+        splitline = line[0][:-1].split()
+        return splitline
+
+    def testing_time_to_float(self, splitline):
+        '''Convet the string representing testing time into a float representing total seconds.'''
+        seconds = []
+        # time with comma, is this supposed to happen?
+        if 'milliseconds' in splitline:
+            seconds.append((time_to_float(splitline[splitline.index('milliseconds') - 1])) / 1000)
+        if 'seconds' in splitline:
+            seconds.append(time_to_float(splitline[splitline.index('seconds') - 1]))
+        if 'minutes' in splitline:
+            seconds.append(time_to_float(splitline[splitline.index('minutes') - 1]) * 60)
+        if 'hours' in splitline:
+            seconds.append(time_to_float(splitline[splitline.index('hours') - 1]) * 3600)
+        if 'days' in splitline:
+            seconds.append(time_to_float(splitline[splitline.index('days') - 1]) * 86400)
+        return sum(seconds)
+
+    def testtime(self):
+        '''Combines the get_testing_time and testing_time_to_float functions
+           to return a float representing seconds.'''
+        splitline = self.get_testing_time()
+        return self.testing_time_to_float(splitline)
