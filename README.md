@@ -15,7 +15,7 @@
 > **BoostSRL** (Boosting for Statistical Relational Learning) is a gradient-boosting based approach to learning statistical relational models.  
 > Sriraam Natarajan, Tushar Khot, Kristian Kersting and Jude Shavlik, Boosted Statistical Relational Learners: From Benchmarks to Data-Driven Medicine. SpringerBriefs in Computer Science, ISBN: 978-3-319-13643-1, 2015
 
-*boostsrl* is a Python package with wrappers for creating background knowledge and performing learning and inference.
+*boostsrl* is a Python package with wrappers for creating background knowledge and performing learning and inference. This modification allow to learn parameters and perform refinement on given trees. Need to run with a small modification of the BoostSRL from this [repository](https://github.com/rodrigoazs/BoostSRL).
 
 ## Getting Started
 
