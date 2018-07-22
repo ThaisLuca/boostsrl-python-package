@@ -191,7 +191,7 @@ class modes(object):
             
 class train(object):
     
-    def __init__(self, background, train_pos, train_neg, train_facts, save=False, advice=False, softm=False, alpha=0.5, beta=-2, trees=10):
+    def __init__(self, background, train_pos, train_neg, train_facts, refine=None, save=False, advice=False, softm=False, alpha=0.5, beta=-2, trees=10):
         '''
         background: list of strings representing background knowledge.
         '''
@@ -218,11 +218,15 @@ class train(object):
         # Write train_bk
         write_to_file(['import: "../background.txt".'], 'boostsrl/train/train_bk.txt')
         
+        # Write refine.txt if presented
+        if refine:
+            write_to_file(refine, 'boostsrl/refine.txt')
+        
         write_to_file(self.train_pos, 'boostsrl/train/train_pos.txt')
         write_to_file(self.train_neg, 'boostsrl/train/train_neg.txt')
         write_to_file(self.train_facts, 'boostsrl/train/train_facts.txt')
         
-        CALL = '(cd boostsrl; java -jar v1-0.jar -l -train train/ -target ' + ','.join(self.target) + \
+        CALL = '(cd boostsrl; java -jar v1-0.jar -l ' + ('-refine refine.txt ' if refine else '') + '-train train/ -target ' + ','.join(self.target) + \
                ' -trees ' + str(self.trees) + ' > train_output.txt 2>&1)'
         call_process(CALL)
 
@@ -275,6 +279,59 @@ class train(object):
            to return a float representing seconds.'''
         splitline = self.get_training_time()
         return self.training_time_to_float(splitline)
+        
+    def get_will_produced_tree(self):
+        '''Return the WILL-Produced Tree #1'''
+        with open('boostsrl/train/models/WILLtheories/' + self.target[0] + '_learnedWILLregressionTrees.txt', 'r') as f:
+            text = f.read()
+        line = re.findall(r'%%%%%  WILL-Produced Tree #1 .* %%%%%[\s\S]*% Clauses:', text)
+        splitline = (line[0].split('\n'))[2:]
+        for i in range(len(splitline)):
+            if splitline[i] == '% Clauses:':
+                return splitline[:i-2]
+
+    def get_structured_tree(self):
+        '''Use the get_will_produced_tree function to get the WILL-Produced Tree #1
+           and returns it as objects with nodes, std devs and number of examples reached.'''
+        def get_results(groups):
+            #std dev, neg, pos
+            ret = [float(groups[0].replace(',','.')), 0, 0]
+            match = re.findall(r'\#pos=(\d*).*', groups[1])
+            if match:
+                ret[2] = int(match[0].replace('.',''))
+            match = re.findall(r'\#neg=(\d*)', groups[1])
+            if match:
+                ret[1] = int(match[0].replace('.',''))
+            return ret
+    
+        lines = self.get_will_produced_tree()
+        current = []
+        stack = []
+        target = None
+        nodes = {}
+        leaves = {}
+        
+        for line in lines:
+            if not target:
+                match = re.match('\s*\%\s*FOR\s*(\w+\([\w,\s]*\)):', line)
+                if match:
+                    target = match.group(1)
+            match = re.match('.*if\s*\(\s*([\w\(\),\s]*)\s*\).*', line)
+            if match:
+                nodes[','.join(current)] = match.group(1).strip()
+                stack.append(current+['false'])
+                current.append('true')
+            match = re.match('.*then return [\d.-]*;\s*\/\/\s*std dev\s*=\s*([\d,.\-e]*),.*\/\*\s*(.*)\s*\*\/.*', line)
+            if match:
+                leaves[','.join(current)] = get_results(match.groups()) #float(match.group(1))
+                if len(stack):
+                    current = stack.pop()
+            match = re.match('.*else return [\d.-]*;\s*\/\/\s*std dev\s*=\s*([\d,.\-e]*),.*\/\*\s*(.*)\s*\*\/.*', line)
+            if match:
+                leaves[','.join(current)] = get_results(match.groups()) #float(match.group(1))
+                if len(stack):
+                    current = stack.pop()
+        return [target, nodes, leaves]
 
 class test(object):
 
