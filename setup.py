@@ -28,7 +28,7 @@ setup(
     # boostsrl_java stores files in the user's home directory by default.
     include_package_data = True,
     data_files=[(path.expanduser('~') + '/.boostsrl_data', ['boostsrl/v1-0.jar',
-                                                            'boostsrl/auc.jar']),]
+                                                            'boostsrl/auc.jar'])],
                 #(path.expanduser('~') + '/.boostsrl_data/train', ['boostsrl/train/train_bk.txt']),
                 #(path.expanduser('~') + '/.boostsrl_data/test', ['boostsrl/test/test_bk.txt'])],
 
