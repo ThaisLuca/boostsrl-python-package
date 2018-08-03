@@ -244,7 +244,9 @@ class train(object):
         write_to_file(self.train_neg, 'boostsrl/train/train_neg.txt')
         write_to_file(self.train_facts, 'boostsrl/train/train_facts.txt')
         
-        CALL = '(cd boostsrl; java -jar v1-0.jar -l ' + ('-refine refine.txt ' if refine else '') + '-train train/ -target ' + ','.join(self.target) + \
+        combine = '-combine ' if self.trees > 1 else ''
+        
+        CALL = '(cd boostsrl; java -jar v1-0.jar -l ' + ('-refine refine.txt ' if refine else '') + combine + '-train train/ -target ' + ','.join(self.target) + \
                ' -trees ' + str(self.trees) + ' > train_output.txt 2>&1)'
         call_process(CALL)
 
@@ -257,7 +259,7 @@ class train(object):
             Writing this with Jupyter notebooks in mind.
             '''
             from graphviz import Source
-            tree_file = 'boostsrl/train/models/bRDNs/dotFiles/WILLTreeFor_' + target + str(treenumber) + '.dot'
+            tree_file = 'boostsrl/train/models/bRDNs/dotFiles/WILLTreeFor_' + target + str(treenumber) + '.dot' if self.trees == 1 else 'boostsrl/train/models/bRDNs/dotFiles/CombinedTrees' + target + '.dot'
             with open(tree_file, 'r') as f:
                 tree_output = ''.join(f.read().splitlines())
             src = Source(tree_output)
@@ -301,9 +303,10 @@ class train(object):
         
     def get_will_produced_tree(self):
         '''Return the WILL-Produced Tree #1'''
+        combine = 'Combined' if self.trees > 1 else '#1'
         with open('boostsrl/train/models/WILLtheories/' + self.target[0] + '_learnedWILLregressionTrees.txt', 'r') as f:
             text = f.read()
-        line = re.findall(r'%%%%%  WILL-Produced Tree #1 .* %%%%%[\s\S]*% Clauses:', text)
+        line = re.findall(r'%%%%%  WILL-Produced Tree '+ combine +' .* %%%%%[\s\S]*% Clauses:', text)
         splitline = (line[0].split('\n'))[2:]
         for i in range(len(splitline)):
             if splitline[i] == '% Clauses:':
@@ -316,12 +319,13 @@ class train(object):
             #std dev, neg, pos
             # std dev with comma, is this supposed to happen?
             ret = [results_to_float(groups[0]), 0, 0]
-            match = re.findall(r'\#pos=([\d.]*).*', groups[1])
-            if match:
-                ret[2] = examples_to_float(match[0])
-            match = re.findall(r'\#neg=([\d.]*)', groups[1])
-            if match:
-                ret[1] = examples_to_float(match[0])
+            if len(groups) > 1:
+                match = re.findall(r'\#pos=([\d.]*).*', groups[1])
+                if match:
+                    ret[2] = examples_to_float(match[0])
+                match = re.findall(r'\#neg=([\d.]*)', groups[1])
+                if match:
+                    ret[1] = examples_to_float(match[0])
             return ret
     
         lines = self.get_will_produced_tree()
@@ -347,7 +351,7 @@ class train(object):
                 if len(stack):
                     current = stack.pop()
             else:
-                match = re.match('.*[then|else] return [\d.-]*;\s*\/\/\s*.*\/\*\s*(.*)\s*\*\/.*', line)
+                match = re.match('.*[then|else] return [\d.-]*;\s*\/\/\s*.*', line)
                 if match:
                     leaves[','.join(current)] = get_results(['0'] + list(match.groups())) #float(match.group(1))
                     if len(stack):
