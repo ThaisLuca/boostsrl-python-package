@@ -301,9 +301,9 @@ class train(object):
         splitline = self.get_training_time()
         return self.training_time_to_float(splitline)
         
-    def get_will_produced_tree(self):
-        '''Return the WILL-Produced Tree #1'''
-        combine = 'Combined' if self.trees > 1 else '#1'
+    def get_will_produced_tree(self, treenumber=1):
+        '''Return the WILL-Produced Tree'''
+        combine = 'Combined' if self.trees > 1 and treenumber=='combine' else '#' + str(treenumber)
         with open('boostsrl/train/models/WILLtheories/' + self.target[0] + '_learnedWILLregressionTrees.txt', 'r') as f:
             text = f.read()
         line = re.findall(r'%%%%%  WILL-Produced Tree '+ combine +' .* %%%%%[\s\S]*% Clauses:', text)
@@ -312,7 +312,7 @@ class train(object):
             if splitline[i] == '% Clauses:':
                 return splitline[:i-2]
 
-    def get_structured_tree(self):
+    def get_structured_tree(self, treenumber=1):
         '''Use the get_will_produced_tree function to get the WILL-Produced Tree #1
            and returns it as objects with nodes, std devs and number of examples reached.'''
         def get_results(groups):
@@ -328,7 +328,7 @@ class train(object):
                     ret[1] = examples_to_float(match[0])
             return ret
     
-        lines = self.get_will_produced_tree()
+        lines = self.get_will_produced_tree(treenumber=treenumber)
         current = []
         stack = []
         target = None
