@@ -301,6 +301,16 @@ class train(object):
         splitline = self.get_training_time()
         return self.training_time_to_float(splitline)
         
+    def get_variances(self, treenumber=1):
+        '''Return variances of nodes'''
+        with open('boostsrl/train/train_learn_dribble.txt', 'r') as f:
+            text = f.read()
+        line = re.findall(r'% Path: '+ str(treenumber-1) + ';([\w,]*)\sComparing variance: ([\d.E\-]*) .*\sComparing variance: ([\d.E\-]*).*', text)
+        ret = {}
+        for item in line:
+            ret[item[0]] = [float(item[1]), float(item[2])]
+        return ret
+        
     def get_will_produced_tree(self, treenumber=1):
         '''Return the WILL-Produced Tree'''
         combine = 'Combined' if self.trees > 1 and treenumber=='combine' else '#' + str(treenumber)
