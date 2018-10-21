@@ -305,7 +305,7 @@ class train(object):
         '''Return variances of nodes'''
         with open('boostsrl/train/train_learn_dribble.txt', 'r') as f:
             text = f.read()
-        line = re.findall(r'% Path: '+ str(treenumber-1) + ';([\w,]*)\sComparing variance: ([\d.E\-]*) .*\sComparing variance: ([\d.E\-]*).*', text)
+        line = re.findall(r'% Path: '+ str(treenumber-1) + ';([\w,]*)\sComparing variance: ([\d.\w\-]*) .*\sComparing variance: ([\d.\w\-]*) .*', text)
         ret = {}
         for item in line:
             ret[item[0]] = [float(item[1]), float(item[2])]
