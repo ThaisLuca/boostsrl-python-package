@@ -355,13 +355,13 @@ class train(object):
                 nodes[','.join(current)] = match.group(1).strip()
                 stack.append(current+['false'])
                 current.append('true')
-            match = re.match('.*[then|else] return [\d.-]*;\s*\/\/\s*std dev\s*=\s*([\d,.\-e]*),.*\/\*\s*(.*)\s*\*\/.*', line)
+            match = re.match('.*[then|else] return .*;\s*\/\/\s*std dev\s*=\s*([\d,.\-e]*),.*\/\*\s*(.*)\s*\*\/.*', line)
             if match:
                 leaves[','.join(current)] = get_results(match.groups()) #float(match.group(1))
                 if len(stack):
                     current = stack.pop()
             else:
-                match = re.match('.*[then|else] return [\d.-]*;\s*\/\/\s*.*', line)
+                match = re.match('.*[then|else] return .*;\s*\/\/\s*.*', line)
                 if match:
                     leaves[','.join(current)] = get_results(['0'] + list(match.groups())) #float(match.group(1))
                     if len(stack):
