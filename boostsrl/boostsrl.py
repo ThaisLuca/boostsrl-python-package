@@ -21,7 +21,7 @@ else:
     import subprocess
 
 # Mode definitions and predicate logic examples can be verified with regular expressions.
-mode_re = re.compile(r'[a-zA-Z0-9]*\(((\+|\-|\#)[a-zA-Z0-9]*,( )*)*(\+|\-|\#)[a-zA-Z0-9]*\)\.')
+mode_re = re.compile(r'[a-zA-Z0-9]*\(((\+|\-|\#|\`)[a-zA-Z0-9]*,( )*)*(\+|\-|\#|\`)[a-zA-Z0-9]*\)\.')
 exam_re = re.compile(r'[a-zA-Z0-9]*\(([a-zA-Z0-9]*,( )*)*[a-zA-Z0-9]*\)\.')
 
 def results_to_float(string):
