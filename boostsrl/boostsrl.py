@@ -209,7 +209,7 @@ class modes(object):
             
 class train(object):
     
-    def __init__(self, background, train_pos, train_neg, train_facts, refine=None, save=False, advice=False, softm=False, alpha=0.5, beta=-2, trees=1):
+    def __init__(self, background, train_pos, train_neg, train_facts, refine=None, transfer=None, save=False, advice=False, softm=False, alpha=0.5, beta=-2, trees=1):
         '''
         background: list of strings representing background knowledge.
         '''
@@ -239,6 +239,10 @@ class train(object):
         # Write refine.txt if presented
         if refine:
             write_to_file(refine, 'boostsrl/refine.txt')
+            
+        # Write transfer.txt if presented
+        if transfer:
+            write_to_file(transfer, 'boostsrl/transfer.txt')
         
         write_to_file(self.train_pos, 'boostsrl/train/train_pos.txt')
         write_to_file(self.train_neg, 'boostsrl/train/train_neg.txt')
@@ -246,7 +250,7 @@ class train(object):
         
         combine = '-combine ' if self.trees > 1 else ''
         
-        CALL = '(cd boostsrl; java -jar v1-0.jar -l ' + ('-refine refine.txt ' if refine else '') + combine + '-train train/ -target ' + ','.join(self.target) + \
+        CALL = '(cd boostsrl; java -jar v1-0.jar -l ' + ('-refine refine.txt ' if refine else '') + ('-transfer transfer.txt ' if transfer else '') + combine + '-train train/ -target ' + ','.join(self.target) + \
                ' -trees ' + str(self.trees) + ' > train_output.txt 2>&1)'
         call_process(CALL)
 
