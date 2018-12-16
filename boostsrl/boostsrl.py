@@ -248,7 +248,7 @@ class train(object):
         write_to_file(self.train_neg, 'boostsrl/train/train_neg.txt')
         write_to_file(self.train_facts, 'boostsrl/train/train_facts.txt')
         
-        combine = '-combine ' if self.trees > 1 else ''
+        combine = '' #'-combine ' if self.trees > 1 else ''
         
         CALL = '(cd boostsrl; java -jar v1-0.jar -l ' + ('-refine refine.txt ' if refine else '') + ('-transfer transfer.txt ' if transfer else '') + combine + '-train train/ -target ' + ','.join(self.target) + \
                ' -trees ' + str(self.trees) + ' > train_output.txt 2>&1)'
