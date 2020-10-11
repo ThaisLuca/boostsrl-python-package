@@ -236,13 +236,6 @@ class train(object):
         # Write train_bk
         write_to_file(['import: "../background.txt".'], 'boostsrl/train/train_bk.txt')
         
-        # Write refine.txt if presented
-        if refine:
-            write_to_file(refine, 'boostsrl/refine.txt')
-            
-        # Write transfer.txt if presented
-        if transfer:
-            write_to_file(transfer, 'boostsrl/transfer.txt')
         
         write_to_file(self.train_pos, 'boostsrl/train/train_pos.txt')
         write_to_file(self.train_neg, 'boostsrl/train/train_neg.txt')
