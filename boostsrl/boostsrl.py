@@ -292,11 +292,11 @@ class train(object):
             seconds.append(time_to_float(splitline[splitline.index('days') - 1]) * 86400)
         return sum(seconds)
 
-    def traintime(self):
-        '''Combines the get_training_time and training_time_to_float functions
-           to return a float representing seconds.'''
-        splitline = self.get_training_time()
-        return self.training_time_to_float(splitline)
+#    def traintime(self):
+#        '''Combines the get_training_time and training_time_to_float functions
+#           to return a float representing seconds.'''
+#        splitline = self.get_training_time()
+#        return self.training_time_to_float(splitline)
         
     def get_variances(self, treenumber=1):
         '''Return variances of nodes'''
