@@ -65,7 +65,10 @@ def example_data(example):
 def call_process(call):
     '''Create a subprocess and wait for it to finish. Error out if errors occur.'''
     try:
-        p = subprocess.check_call(call, shell=True)
+        p = subprocess.Popen('cd boostsrl', shell=True)
+        os.waitpid(p.pid, 0)
+        
+        p = subprocess.Popen(call, shell=True)
         os.waitpid(p.pid, 0)
     except:
         raise(Exception('Encountered problems while running process: ', call))
@@ -242,9 +245,8 @@ class train(object):
         write_to_file(self.train_facts, 'boostsrl/train/train_facts.txt')
         
         combine = '' #'-combine ' if self.trees > 1 else ''
-        path = os.getcwd() + '/boostsrl'
         
-        CALL = '(cd ' + path + '; java -jar v1-0.jar -l ' + ('-refine refine.txt ' if refine else '') + ('-transfer transfer.txt ' if transfer else '') + combine + '-train train/ -target ' + ','.join(self.target) + \
+        CALL = '(java -jar v1-0.jar -l ' + ('-refine refine.txt ' if refine else '') + ('-transfer transfer.txt ' if transfer else '') + combine + '-train train/ -target ' + ','.join(self.target) + \
                ' -trees ' + str(self.trees) + ' > train_output.txt 2>&1)'
         call_process(CALL)
 
