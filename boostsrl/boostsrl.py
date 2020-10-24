@@ -66,6 +66,7 @@ def call_process(call):
     '''Create a subprocess and wait for it to finish. Error out if errors occur.'''
     try:
         p = subprocess.Popen(call, shell=True)
+        p.communicate() 
         os.waitpid(p.pid, 0)
     except:
         raise(Exception('Encountered problems while running process: ', call))
@@ -245,7 +246,6 @@ class train(object):
         
         CALL = '(cd boostsrl; java -jar v1-0.jar -l ' + ('-refine refine.txt ' if refine else '') + ('-transfer transfer.txt ' if transfer else '') + combine + '-train train/ -target ' + ','.join(self.target) + \
                ' -trees ' + str(self.trees) + ' > train_output.txt 2>&1)'
-        print(CALL)
         call_process(CALL)
 
     def tree(self, treenumber, target, image=False):
