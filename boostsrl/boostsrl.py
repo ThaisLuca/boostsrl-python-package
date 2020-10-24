@@ -65,9 +65,6 @@ def example_data(example):
 def call_process(call):
     '''Create a subprocess and wait for it to finish. Error out if errors occur.'''
     try:
-        p = subprocess.check_call('cd boostsrl', shell=True)
-        os.waitpid(p.pid, 0)
-
         p = subprocess.Popen(call, shell=True)
         os.waitpid(p.pid, 0)
     except:
@@ -246,8 +243,8 @@ class train(object):
         
         combine = '' #'-combine ' if self.trees > 1 else ''
         
-        CALL = 'java -jar v1-0.jar -l ' + ('-refine refine.txt ' if refine else '') + ('-transfer transfer.txt ' if transfer else '') + combine + '-train train/ -target ' + ','.join(self.target) + \
-               ' -trees ' + str(self.trees) + ' > train_output.txt 2>&1'
+        CALL = '(cd boostsrl; java -jar v1-0.jar -l ' + ('-refine refine.txt ' if refine else '') + ('-transfer transfer.txt ' if transfer else '') + combine + '-train train/ -target ' + ','.join(self.target) + \
+               ' -trees ' + str(self.trees) + ' > train_output.txt 2>&1)'
         call_process(CALL)
 
     def tree(self, treenumber, target, image=False):
