@@ -244,7 +244,7 @@ class train(object):
         combine = '' #'-combine ' if self.trees > 1 else ''
         path = os.getcwd() + '\\boostsrl'
         
-        CALL = ['cd', '' ,'java', '-jar', 'v1-0.jar', '-l', ('-refine refine.txt ' if refine else ''), ('-transfer transfer.txt ' if transfer else ''), combine, '-train', 'train/', '-target', ','.join(self.target),
+        CALL = ['cd', path,'java', '-jar', 'v1-0.jar', '-l', ('-refine refine.txt ' if refine else ''), ('-transfer transfer.txt ' if transfer else ''), combine, '-train', 'train/', '-target', ','.join(self.target),
                '-trees', str(self.trees), ' > train_output.txt 2>&1)']
         call_process(CALL)
 
