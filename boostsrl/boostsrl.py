@@ -251,9 +251,12 @@ class train(object):
         if(transfer != ''):
             CALL.append(transfer)
 
-        CALL.append('-train train/')
-        CALL.append('-target ' + ','.join(self.target))
-        CALL.append('-trees ' + str(self.trees))
+        CALL.append('-train')
+        CALL.append(' train/')
+        CALL.append('-target')
+        CALL.append(','.join(self.target))
+        CALL.append('-trees')
+        CALL.append(str(self.trees))
         #CALL.append(' > train_output.txt 2>&1')
 
         print(CALL)
