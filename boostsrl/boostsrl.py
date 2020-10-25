@@ -65,7 +65,7 @@ def example_data(example):
 def call_process(cmd):
     '''Create a subprocess and wait for it to finish. Error out if errors occur.'''
     try:
-        p = subprocess.call(cmd, shell=True)
+        p = subprocess.call(cmd)
         os.waitpid(p.pid, 0)
     except:
         raise(Exception('Encountered problems while running process: ', cmd))
