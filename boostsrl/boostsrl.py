@@ -242,21 +242,13 @@ class train(object):
         refine = '-refine refine.txt ' if refine else ''
         transfer = '-transfer transfer.txt ' if transfer else ''
 
-        CALL = ['C:\\Program Files\\Git\\bin\\bash.exe', '-c', 'java -jar boostsrl/v1-0.jar', '-l']
+        CALL = 'java -jar boostsrl/v1-0.jar -l '
         if(refine != ''):
-            CALL.append(refine)
+            CALL += refine
         if(transfer != ''):
-            CALL.append(transfer)
+            CALL += transfer
 
-        CALL.append('-train')
-        CALL.append(' train/')
-        CALL.append('-target')
-        CALL.append(','.join(self.target))
-        CALL.append('-trees')
-        CALL.append(str(self.trees))
-        CALL.append('>')
-        CALL.append('train_output.txt')
-        CALL.append('2>&1')
+        CALL += '-train train/ -target ' + ','.join(self.target) + ' -trees ' + str(self.trees) + ' > train_output.txt 2>&1'
 
         print(CALL)
         call_process(CALL)
