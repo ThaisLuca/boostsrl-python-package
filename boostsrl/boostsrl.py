@@ -62,10 +62,10 @@ def example_data(example):
     else:
         raise(Exception('Attempted to use sample data that does not exist.'))
     
-def call_process(call):
+def call_process(cmd):
     '''Create a subprocess and wait for it to finish. Error out if errors occur.'''
     try:
-        p = subprocess.Popen(call, shell=True)
+        p = subprocess.call(cmd, shell=True)
         os.waitpid(p.pid, 0)
     except:
         raise(Exception('Encountered problems while running process: ', call))
@@ -242,9 +242,11 @@ class train(object):
         write_to_file(self.train_facts, 'boostsrl/train/train_facts.txt')
         
         combine = '' #'-combine ' if self.trees > 1 else ''
+        refine = '-refine refine.txt ' if refine else ''
+        transfer = '-transfer transfer.txt ' if transfer else ''
         
-        CALL = '(cd boostsrl; java -jar v1-0.jar -l ' + ('-refine refine.txt ' if refine else '') + ('-transfer transfer.txt ' if transfer else '') + combine + '-train train/ -target ' + ','.join(self.target) + \
-               ' -trees ' + str(self.trees) + ' > train_output.txt 2>&1)'
+        CALL = ['C:\\Program Files\\Git\\bin\\bash.exe', '-c', 'java -jar boostsrl/v1-0.jar', '-l', refine, transfer, combine, '-train train/', '-target ' + ','.join(self.target),
+               '-trees ' + str(self.trees),' > train_output.txt 2>&1']
         call_process(CALL)
 
     def tree(self, treenumber, target, image=False):
