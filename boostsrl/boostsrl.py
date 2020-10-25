@@ -244,9 +244,15 @@ class train(object):
         combine = '' #'-combine ' if self.trees > 1 else ''
         refine = '-refine refine.txt ' if refine else ''
         transfer = '-transfer transfer.txt ' if transfer else ''
-        
-        CALL = ['C:\\Program Files\\Git\\bin\\bash.exe', '-c', 'java -jar boostsrl/v1-0.jar', '-l', refine, transfer, combine, '-train train/', '-target ' + ','.join(self.target),
-               '-trees ' + str(self.trees),' > train_output.txt 2>&1']
+
+        CALL = ['C:\\Program Files\\Git\\bin\\bash.exe', '-c', 'java -jar boostsrl/v1-0.jar', '-l']
+        if(refine != ''):
+            CALL.append(refine)
+        if(transfer != ''):
+            CALL.append(transfer)
+
+        CALL.append('-train train/').append('-target ' + ','.join(self.target)).append('-trees ' + str(self.trees)).append(' > train_output.txt 2>&1')
+        print(CALL)
         call_process(CALL)
 
     def tree(self, treenumber, target, image=False):
