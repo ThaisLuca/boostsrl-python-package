@@ -254,7 +254,8 @@ class train(object):
         CALL.append(','.join(self.target))
         CALL.append('-trees')
         CALL.append(str(self.trees))
-        CALL.append('> train_output.txt')
+        CALL.append('>')
+        CALL.append('train_output.txt')
         CALL.append('2>&1')
 
         print(CALL)
@@ -398,7 +399,7 @@ class test(object):
         self.target = model.target
 
         CALL = ['C:\\Program Files\\Git\\bin\\bash.exe', '-c', 'java -jar boostsrl/v1-0.jar', '-i', '-model', 'train/models/', '-test', 'test/',
-        '-target', ','.join(self.target), '-trees', str(trees), '-aucJarPath', '.', ' > test_output.txt', '2>&1']
+        '-target', ','.join(self.target), '-trees', str(trees), '-aucJarPath', '.', '>', 'test_output.txt', '2>&1']
         call_process(CALL)
     
     def summarize_results(self):
