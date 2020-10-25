@@ -68,7 +68,7 @@ def call_process(cmd):
         p = subprocess.call(cmd, shell=True)
         os.waitpid(p.pid, 0)
     except:
-        raise(Exception('Encountered problems while running process: ', call))
+        raise(Exception('Encountered problems while running process: ', cmd))
 
 def inspect_mode_syntax(example):
     '''Uses a regular expression to check whether all of the examples in a list are in the correct form.
