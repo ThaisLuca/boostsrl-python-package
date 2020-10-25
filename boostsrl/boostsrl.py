@@ -64,9 +64,8 @@ def example_data(example):
     
 def call_process(cmd):
     '''Create a subprocess and wait for it to finish. Error out if errors occur.'''
-    try:
-        p = subprocess.call(cmd)
-        os.waitpid(p.pid, 0)
+    p = subprocess.call(cmd)
+    os.waitpid(p.pid, 0)
 
 def inspect_mode_syntax(example):
     '''Uses a regular expression to check whether all of the examples in a list are in the correct form.
