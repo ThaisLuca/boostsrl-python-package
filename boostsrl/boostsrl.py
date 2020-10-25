@@ -239,8 +239,8 @@ class train(object):
         write_to_file(self.train_facts, 'boostsrl/train/train_facts.txt')
         
         combine = '' #'-combine ' if self.trees > 1 else ''
-        refine = '-refine refine.txt ' if refine else ''
-        transfer = '-transfer transfer.txt ' if transfer else ''
+        refine = '-refine boostsrl/refine.txt ' if refine else ''
+        transfer = '-transfer boostsrl/transfer.txt ' if transfer else ''
 
         CALL = 'java -jar boostsrl/v1-0.jar -l '
         if(refine != ''):
@@ -248,7 +248,7 @@ class train(object):
         if(transfer != ''):
             CALL += transfer
 
-        CALL += '-train train/ -target ' + ','.join(self.target) + ' -trees ' + str(self.trees) + ' > train_output.txt 2>&1'
+        CALL += '-train boostsrl/train/ -target ' + ','.join(self.target) + ' -trees ' + str(self.trees) + ' > train_output.txt 2>&1'
 
         print(CALL)
         call_process(CALL)
@@ -390,7 +390,7 @@ class test(object):
 
         self.target = model.target
 
-        CALL = 'java -jar boostsrl/v1-0.jar -i -model train/models/ -test test/ -target ' + \
+        CALL = 'java -jar boostsrl/v1-0.jar -i -model boostsrl/train/models/ -test boostsrl/test/ -target ' + \
                ','.join(self.target) + ' -trees ' + str(trees) + ' -aucJarPath . > test_output.txt 2>&1'
         call_process(CALL)
     
