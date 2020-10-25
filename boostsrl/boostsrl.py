@@ -64,7 +64,7 @@ def example_data(example):
     
 def call_process(cmd):
     '''Create a subprocess and wait for it to finish. Error out if errors occur.'''
-    p = subprocess.Popen(cmd)
+    p = subprocess.Popen(cmd, shell=True)
     #os.waitpid(p.pid, 0)
 
 def inspect_mode_syntax(example):
@@ -239,17 +239,16 @@ class train(object):
         write_to_file(self.train_facts, 'boostsrl/train/train_facts.txt')
         
         combine = '' #'-combine ' if self.trees > 1 else ''
-        #refine = '-refine refine.txt ' if refine else ''
-        #transfer = '-transfer transfer.txt ' if transfer else ''
+        refine = '-refine refine.txt ' if refine else ''
+        transfer = '-transfer transfer.txt ' if transfer else ''
 
-        CALL = 'java -jar boostsrl/v1-0.jar -l ' + ('-refine refine.txt ' if refine else '') + ('-transfer transfer.txt ' if transfer else '') + combine + '-train train/ -target ' + ','.join(self.target) + \
-               ' -trees ' + str(self.trees) + ' > train_output.txt 2>&1'
-        #if(refine != ''):
-        #    CALL += refine
-        #if(transfer != ''):
-        #    CALL += transfer
+        CALL = 'java -jar boostsrl/v1-0.jar -l '
+        if(refine != ''):
+            CALL += refine
+        if(transfer != ''):
+            CALL += transfer
 
-        #CALL += '-train train/ -target ' + ','.join(self.target) + ' -trees ' + str(self.trees) + ' > train_output.txt 2>&1'
+        CALL += '-train train/ -target ' + ','.join(self.target) + ' -trees ' + str(self.trees) + ' > train_output.txt 2>&1'
 
         print(CALL)
         call_process(CALL)
@@ -391,8 +390,8 @@ class test(object):
 
         self.target = model.target
 
-        CALL = ['C:\\Program Files\\Git\\bin\\bash.exe', '-c', 'java -jar boostsrl/v1-0.jar', '-i', '-model', 'train/models/', '-test', 'test/',
-        '-target', ','.join(self.target), '-trees', str(trees), '-aucJarPath', '.', '>', 'test_output.txt', '2>&1']
+        CALL = 'java -jar boostsrl/v1-0.jar -i -model train/models/ -test test/ -target ' + \
+               ','.join(self.target) + ' -trees ' + str(trees) + ' -aucJarPath . > test_output.txt 2>&1'
         call_process(CALL)
     
     def summarize_results(self):
