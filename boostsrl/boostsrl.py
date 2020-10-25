@@ -248,7 +248,7 @@ class train(object):
         if(transfer != ''):
             CALL += transfer
 
-        CALL += '-train boostsrl/train/ -target ' + ','.join(self.target) + ' -trees ' + str(self.trees) + ' > train_output.txt 2>&1'
+        CALL += '-train boostsrl/train/ -target ' + ','.join(self.target) + ' -trees ' + str(self.trees) + ' > boostsrl/train_output.txt 2>&1'
 
         print(CALL)
         call_process(CALL)
@@ -391,7 +391,7 @@ class test(object):
         self.target = model.target
 
         CALL = 'java -jar boostsrl/v1-0.jar -i -model boostsrl/train/models/ -test boostsrl/test/ -target ' + \
-               ','.join(self.target) + ' -trees ' + str(trees) + ' -aucJarPath . > test_output.txt 2>&1'
+               ','.join(self.target) + ' -trees ' + str(trees) + ' -aucJarPath . > boostsrl/test_output.txt 2>&1'
         call_process(CALL)
     
     def summarize_results(self):
