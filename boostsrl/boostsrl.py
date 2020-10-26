@@ -353,7 +353,7 @@ class train(object):
             ret[item[0]] = [float(item[1]), float(item[2])]
         return ret
 
-     def get_will_produced_tree(self, treenumber=1):
+    def get_will_produced_tree(self, treenumber=1):
         '''Return the WILL-Produced Tree'''
         combine = 'Combined' if self.trees > 1 and treenumber=='combine' else '#' + str(treenumber)
         with open(os.getcwd() + '/boostsrl/train/models/WILLtheories/' + self.target[0] + '_learnedWILLregressionTrees.txt', 'r') as f:
