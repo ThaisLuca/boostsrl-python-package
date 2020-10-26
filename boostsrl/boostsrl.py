@@ -260,13 +260,13 @@ class train(object):
             Writing this with Jupyter notebooks in mind.
             '''
             from graphviz import Source
-            tree_file = 'boostsrl/train/models/bRDNs/dotFiles/WILLTreeFor_' + target + str(treenumber) + '.dot' if self.trees == 1 else 'boostsrl/train/models/bRDNs/dotFiles/CombinedTrees' + target + '.dot'
+            tree_file = os.getcwd() + '/boostsrl/train/models/bRDNs/dotFiles/WILLTreeFor_' + target + str(treenumber) + '.dot' if self.trees == 1 else os.getcwd() + '/boostsrl/train/models/bRDNs/dotFiles/CombinedTrees' + target + '.dot'
             with open(tree_file, 'r') as f:
                 tree_output = ''.join(f.read().splitlines())
             src = Source(tree_output)
             return src
         else:
-            tree_file = 'boostsrl/train/models/bRDNs/Trees/' + target + 'Tree' + str(treenumber) + '.tree'
+            tree_file = os.getcwd() + '/boostsrl/train/models/bRDNs/Trees/' + target + 'Tree' + str(treenumber) + '.tree'
             with open(tree_file, 'r') as f:
                 tree_output = f.read()
             return tree_output
@@ -315,7 +315,7 @@ class train(object):
     def get_will_produced_tree(self, treenumber=1):
         '''Return the WILL-Produced Tree'''
         combine = 'Combined' if self.trees > 1 and treenumber=='combine' else '#' + str(treenumber)
-        with open('boostsrl/train/models/WILLtheories/' + self.target[0] + '_learnedWILLregressionTrees.txt', 'r') as f:
+        with open(os.getcwd() + 'boostsrl/train/models/WILLtheories/' + self.target[0] + '_learnedWILLregressionTrees.txt', 'r') as f:
             text = f.read()
         line = re.findall(r'%%%%%  WILL-Produced Tree '+ combine +' .* %%%%%[\s\S]*% Clauses:', text)
         splitline = (line[0].split('\n'))[2:]
