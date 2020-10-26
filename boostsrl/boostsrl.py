@@ -11,6 +11,7 @@
 '''
 
 from __future__ import print_function
+import psutil
 import os
 import re
 import sys
@@ -67,6 +68,18 @@ def example_data(example):
     else:
         raise(Exception('Attempted to use sample data that does not exist.'))
 
+def get_proc_status(pid):
+    """Get the status of the process which has the specified process id."""
+
+    proc_status = None
+    try:
+        proc_status = psutil.Process(pid).status()
+    except psutil.NoSuchProcess as no_proc_exc:
+        print(no_proc_exc)
+    except psutil.ZombieProcess as zombie_proc_exc:  
+        # For Python 3.0+ in Linux (and MacOS?).
+        print(zombie_proc_exc)
+    return proc_status
 
 def call_process(cmd):
     '''Create a subprocess and wait for it to finish. Error out if errors occur.'''
