@@ -65,7 +65,22 @@ def example_data(example):
 def call_process(cmd):
     '''Create a subprocess and wait for it to finish. Error out if errors occur.'''
     p = subprocess.Popen(cmd, shell=True)
-    p.wait()
+    pid = p.pid
+
+    status = get_proc_status(pid)
+    while status is not None and status != "zombie":
+        # The allowed set of statuses might differ on your system.
+        print("subprocess %s, current process status: %s." % (pid, status))
+        time.sleep(1)  # Wait 1 second.
+        status = get_proc_status(pid)
+        # Get process status to check in 'while' clause at start of next loop iteration.
+
+    if os.name == 'posix' and pstatus == "zombie":   # Handle zombie processes in Linux (and MacOS?).
+        print("subprocess %s, near-final process status: %s." % (pid, status))
+        p.communicate()
+
+    status = get_proc_status(pid)
+    print("subprocess %s, final process status: %s.\n" % (pid, status))
     #os.waitpid(p.pid, 0)
 
 def inspect_mode_syntax(example):
@@ -312,8 +327,8 @@ class train(object):
         for item in line:
             ret[item[0]] = [float(item[1]), float(item[2])]
         return ret
-        
-    def get_will_produced_tree(self, treenumber=1):
+       
+     def get_will_produced_tree(self, treenumber=1):
         '''Return the WILL-Produced Tree'''
         combine = 'Combined' if self.trees > 1 and treenumber=='combine' else '#' + str(treenumber)
         with open(os.getcwd() + '/boostsrl/train/models/WILLtheories/' + self.target[0] + '_learnedWILLregressionTrees.txt', 'r') as f:
