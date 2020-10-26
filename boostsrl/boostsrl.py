@@ -21,24 +21,29 @@ else:
     import subprocess
 
 # Mode definitions and predicate logic examples can be verified with regular expressions.
-mode_re = re.compile(r'[a-zA-Z0-9]*\(((\+|\-|\#|\`)[a-zA-Z0-9]*,( )*)*(\+|\-|\#|\`)[a-zA-Z0-9]*\)\.')
+mode_re = re.compile(
+    r'[a-zA-Z0-9]*\(((\+|\-|\#|\`)[a-zA-Z0-9]*,( )*)*(\+|\-|\#|\`)[a-zA-Z0-9]*\)\.')
 exam_re = re.compile(r'[a-zA-Z0-9]*\(([a-zA-Z0-9]*,( )*)*[a-zA-Z0-9]*\)\.')
+
 
 def results_to_float(string):
     '''Results can be printed with comma format.'''
-    return float(string.replace(',','.'))
-    
+    return float(string.replace(',', '.'))
+
+
 def examples_to_float(string):
     '''Results can be printed with comma format.'''
-    return int(string.replace('.',''))
-    
+    return int(string.replace('.', ''))
+
+
 def time_to_float(string):
     '''Results can be printed with comma format.'''
     if '.' in string and ',' in string:
-        return float(string.replace('.','').replace(',','.'))
+        return float(string.replace('.', '').replace(',', '.'))
     elif ',' in string:
-        return float(string.replace(',','.'))
+        return float(string.replace(',', '.'))
     return float(string)
+
 
 def example_data(example):
     '''For demo purposes, include some sample data.
@@ -48,9 +53,9 @@ def example_data(example):
     if example == 'train_pos':
         return ['cancer(Alice).', 'cancer(Bob).', 'cancer(Chuck).', 'cancer(Fred).']
     elif example == 'train_neg':
-        return ['cancer(Dan).','cancer(Earl).']
+        return ['cancer(Dan).', 'cancer(Earl).']
     elif example == 'train_facts':
-        return ['friends(Alice, Bob).', 'friends(Alice, Fred).', 'friends(Chuck, Bob).', 'friends(Chuck, Fred).', 'friends(Dan, Bob).', 'friends(Earl, Bob).','friends(Bob, Alice).', 'friends(Fred, Alice).', 'friends(Bob, Chuck).', 'friends(Fred, Chuck).', 'friends(Bob, Dan).', 'friends(Bob, Earl).', 'smokes(Alice).', 'smokes(Chuck).', 'smokes(Bob).']
+        return ['friends(Alice, Bob).', 'friends(Alice, Fred).', 'friends(Chuck, Bob).', 'friends(Chuck, Fred).', 'friends(Dan, Bob).', 'friends(Earl, Bob).', 'friends(Bob, Alice).', 'friends(Fred, Alice).', 'friends(Bob, Chuck).', 'friends(Fred, Chuck).', 'friends(Bob, Dan).', 'friends(Bob, Earl).', 'smokes(Alice).', 'smokes(Chuck).', 'smokes(Bob).']
     elif example == 'test_pos':
         return ['cancer(Zod).', 'cancer(Xena).', 'cancer(Yoda).']
     elif example == 'test_neg':
@@ -61,7 +66,8 @@ def example_data(example):
         return ['friends(+Person, -Person).', 'friends(-Person, +Person).', 'smokes(+Person).', 'cancer(+Person).']
     else:
         raise(Exception('Attempted to use sample data that does not exist.'))
-    
+
+
 def call_process(cmd):
     '''Create a subprocess and wait for it to finish. Error out if errors occur.'''
     p = subprocess.Popen(cmd, shell=True)
@@ -75,13 +81,15 @@ def call_process(cmd):
         status = get_proc_status(pid)
         # Get process status to check in 'while' clause at start of next loop iteration.
 
-    if os.name == 'posix' and pstatus == "zombie":   # Handle zombie processes in Linux (and MacOS?).
+    # Handle zombie processes in Linux (and MacOS?).
+    if os.name == 'posix' and pstatus == "zombie":
         print("subprocess %s, near-final process status: %s." % (pid, status))
         p.communicate()
 
     status = get_proc_status(pid)
     print("subprocess %s, final process status: %s.\n" % (pid, status))
-    #os.waitpid(p.pid, 0)
+    # os.waitpid(p.pid, 0)
+
 
 def inspect_mode_syntax(example):
     '''Uses a regular expression to check whether all of the examples in a list are in the correct form.
@@ -91,10 +99,11 @@ def inspect_mode_syntax(example):
           friends(person, person).   ::: FAIL
     '''
     if not mode_re.search(example):
-        raise(Exception('Error when checking background knowledge; incorrect syntax: ' + example + \
-                        '\nBackground knowledge should only contain letters and numbers, of the form: ' + \
+        raise(Exception('Error when checking background knowledge; incorrect syntax: ' + example +
+                        '\nBackground knowledge should only contain letters and numbers, of the form: ' +
                         'predicate(+var1, -var2).'))
-    
+
+
 def inspect_example_syntax(example):
     '''Uses a regular expression to check whether all of the examples in a list are in the correct form.
        Example:
@@ -103,13 +112,15 @@ def inspect_example_syntax(example):
     '''
     if not exam_re.search(example):
         raise(Exception('Error when checking example; incorrect syntax: ' + example))
-    
+
+
 def write_to_file(content, path):
     '''Takes a list (content) and a path/file (path) and writes each line of the list to the file location.'''
     with open(path, 'w') as f:
         for line in content:
             f.write(line + '\n')
     f.close()
+
 
 '''
 def build_bridges(target, bk):
@@ -129,8 +140,9 @@ def save_model(model):
     pass
 '''
 
+
 class modes(object):
-    
+
     def __init__(self, background, target, bridgers=None, precomputes=None, loadAllLibraries=False,
                  useStdLogicVariables=False, usePrologVariables=False,
                  recursion=False, lineSearch=False, resampleNegs=False,
@@ -142,7 +154,7 @@ class modes(object):
 
         self.bridgers = bridgers
         self.precomputes = precomputes
-        
+
         self.loadAllLibraries = loadAllLibraries
         self.useStdLogicVariables = useStdLogicVariables
         self.usePrologVariables = usePrologVariables
@@ -157,10 +169,10 @@ class modes(object):
         self.recursion = recursion
         self.lineSearch = lineSearch
         self.resampleNegs = resampleNegs
-        #self.queryPred = 'advisedby/2'
+        # self.queryPred = 'advisedby/2'
 
         # Many of the arguments in the modes object are optional this shows us the values of the ones that are neither false nor none
-        
+
         types = {
             'background should be a list.': isinstance(background, list),
             'target should be a list.': isinstance(target, list),
@@ -180,13 +192,14 @@ class modes(object):
             'minLCTrees should be an int.': isinstance(minLCTrees, int) or minLCTrees is None,
             'incrLCTrees should be an int.': isinstance(incrLCTrees, int) or incrLCTrees is None
         }
-        
+
         # Force type checking for input validation Issue #5
         for type_check in types:
             if not types[type_check]:
-                raise(TypeError('Error when checking type: ' +  type_check))
-        
-        relevant = [[attr, value] for attr, value in self.__dict__.items() if (value is not False) and (value is not None)]
+                raise(TypeError('Error when checking type: ' + type_check))
+
+        relevant = [[attr, value] for attr, value in self.__dict__.items() if (
+            value is not False) and (value is not None)]
         self.relevant = relevant
 
         background_knowledge = []
@@ -210,7 +223,7 @@ class modes(object):
         if self.bridgers is not None:
             for bridger in self.bridgers:
                 background_knowledge.append('bridger: ' + bridger)
-                
+
         if self.precomputes is not None:
             for precompute in self.precomputes:
                 background_knowledge.append(self.precomputes[precompute])
@@ -219,9 +232,10 @@ class modes(object):
         # Write the newly created background_knowledge to a file: background.txt
         self.background_knowledge = background_knowledge
         write_to_file(background_knowledge, 'boostsrl/background.txt')
-            
+
+
 class train(object):
-    
+
     def __init__(self, background, train_pos, train_neg, train_facts, refine=None, transfer=None, save=False, advice=False, softm=False, alpha=0.5, beta=-2, trees=1):
         '''
         background: list of strings representing background knowledge.
@@ -247,14 +261,14 @@ class train(object):
         # Create train folder if it does not exist
         os.makedirs('boostsrl/train', exist_ok=True)
         # Write train_bk
-        write_to_file(['import: "../background.txt".'], 'boostsrl/train/train_bk.txt')
-        
-        
+        write_to_file(['import: "../background.txt".'],
+                      'boostsrl/train/train_bk.txt')
+
         write_to_file(self.train_pos, 'boostsrl/train/train_pos.txt')
         write_to_file(self.train_neg, 'boostsrl/train/train_neg.txt')
         write_to_file(self.train_facts, 'boostsrl/train/train_facts.txt')
-        
-        combine = '' #'-combine ' if self.trees > 1 else ''
+
+        combine = ''  # '-combine ' if self.trees > 1 else ''
         refine = '-refine boostsrl/refine.txt ' if refine else ''
         transfer = '-transfer boostsrl/transfer.txt ' if transfer else ''
 
@@ -264,7 +278,9 @@ class train(object):
         if(transfer != ''):
             CALL += transfer
 
-        CALL += '-train boostsrl/train/ -target ' + ','.join(self.target) + ' -trees ' + str(self.trees) + ' > boostsrl/train_output.txt 2>&1'
+        CALL += '-train boostsrl/train/ -target ' + \
+            ','.join(self.target) + ' -trees ' + str(self.trees) + \
+                     ' > boostsrl/train_output.txt 2>&1'
         call_process(CALL)
 
     def tree(self, treenumber, target, image=False):
@@ -276,13 +292,16 @@ class train(object):
             Writing this with Jupyter notebooks in mind.
             '''
             from graphviz import Source
-            tree_file = os.getcwd() + '/boostsrl/train/models/bRDNs/dotFiles/WILLTreeFor_' + target + str(treenumber) + '.dot' if self.trees == 1 else os.getcwd() + '/boostsrl/train/models/bRDNs/dotFiles/CombinedTrees' + target + '.dot'
+            tree_file = os.getcwd() + '/boostsrl/train/models/bRDNs/dotFiles/WILLTreeFor_' + target + str(treenumber) + \
+                                  '.dot' if self.trees == 1 else os.getcwd(
+                                  ) + '/boostsrl/train/models/bRDNs/dotFiles/CombinedTrees' + target + '.dot'
             with open(tree_file, 'r') as f:
                 tree_output = ''.join(f.read().splitlines())
             src = Source(tree_output)
             return src
         else:
-            tree_file = os.getcwd() + '/boostsrl/train/models/bRDNs/Trees/' + target + 'Tree' + str(treenumber) + '.tree'
+            tree_file = os.getcwd() + '/boostsrl/train/models/bRDNs/Trees/' + \
+                                  target + 'Tree' + str(treenumber) + '.tree'
             with open(tree_file, 'r') as f:
                 tree_output = f.read()
             return tree_output
@@ -301,15 +320,20 @@ class train(object):
         seconds = []
         # time with comma, is this supposed to happen?
         if 'milliseconds' in splitline:
-            seconds.append((time_to_float(splitline[splitline.index('milliseconds') - 1])) / 1000)
+            seconds.append(
+                (time_to_float(splitline[splitline.index('milliseconds') - 1])) / 1000)
         if 'seconds' in splitline:
-            seconds.append(time_to_float(splitline[splitline.index('seconds') - 1]))
+            seconds.append(time_to_float(
+                splitline[splitline.index('seconds') - 1]))
         if 'minutes' in splitline:
-            seconds.append(time_to_float(splitline[splitline.index('minutes') - 1]) * 60)
+            seconds.append(time_to_float(
+                splitline[splitline.index('minutes') - 1]) * 60)
         if 'hours' in splitline:
-            seconds.append(time_to_float(splitline[splitline.index('hours') - 1]) * 3600)
+            seconds.append(time_to_float(
+                splitline[splitline.index('hours') - 1]) * 3600)
         if 'days' in splitline:
-            seconds.append(time_to_float(splitline[splitline.index('days') - 1]) * 86400)
+            seconds.append(time_to_float(
+                splitline[splitline.index('days') - 1]) * 86400)
         return sum(seconds)
 
 #    def traintime(self):
@@ -317,17 +341,18 @@ class train(object):
 #           to return a float representing seconds.'''
 #        splitline = self.get_training_time()
 #        return self.training_time_to_float(splitline)
-        
+
     def get_variances(self, treenumber=1):
         '''Return variances of nodes'''
         with open('boostsrl/train/train_learn_dribble.txt', 'r') as f:
             text = f.read()
-        line = re.findall(r'% Path: '+ str(treenumber-1) + ';([\w,]*)\sComparing variance: ([\d.\w\-]*) .*\sComparing variance: ([\d.\w\-]*) .*', text)
+        line = re.findall(r'% Path: ' + str(treenumber-1) +
+                          ';([\w,]*)\sComparing variance: ([\d.\w\-]*) .*\sComparing variance: ([\d.\w\-]*) .*', text)
         ret = {}
         for item in line:
             ret[item[0]] = [float(item[1]), float(item[2])]
         return ret
-       
+
      def get_will_produced_tree(self, treenumber=1):
         '''Return the WILL-Produced Tree'''
         combine = 'Combined' if self.trees > 1 and treenumber=='combine' else '#' + str(treenumber)
@@ -343,7 +368,7 @@ class train(object):
         '''Use the get_will_produced_tree function to get the WILL-Produced Tree #1
            and returns it as objects with nodes, std devs and number of examples reached.'''
         def get_results(groups):
-            #std dev, neg, pos
+            # std dev, neg, pos
             # std dev with comma, is this supposed to happen?
             ret = [results_to_float(groups[0]), 0, 0]
             if len(groups) > 1:
