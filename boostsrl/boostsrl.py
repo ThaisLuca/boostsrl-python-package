@@ -444,7 +444,7 @@ class test(object):
         self.target = model.target
 
         CALL = 'java -jar boostsrl/v1-0.jar -i -model boostsrl/train/models/ -test boostsrl/test/ -target ' + \
-               ','.join(self.target) + ' -trees ' + str(trees) + ' -aucJarPath boostsrl/auc.jar > boostsrl/test_output.txt 2>&1'
+               ','.join(self.target) + ' -trees ' + str(trees) + ' -aucJarPath boostsrl/ > boostsrl/test_output.txt 2>&1'
         call_process(CALL)
     
     def summarize_results(self):
