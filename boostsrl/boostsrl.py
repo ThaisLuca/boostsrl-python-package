@@ -90,18 +90,18 @@ def call_process(cmd):
     status = get_proc_status(pid)
     while status is not None and status != "zombie":
         # The allowed set of statuses might differ on your system.
-        print("subprocess %s, current process status: %s." % (pid, status))
+        #print("subprocess %s, current process status: %s." % (pid, status))
         time.sleep(1)  # Wait 1 second.
         status = get_proc_status(pid)
         # Get process status to check in 'while' clause at start of next loop iteration.
 
     # Handle zombie processes in Linux (and MacOS?).
     if os.name == 'posix' and pstatus == "zombie":
-        print("subprocess %s, near-final process status: %s." % (pid, status))
+        #print("subprocess %s, near-final process status: %s." % (pid, status))
         p.communicate()
 
     status = get_proc_status(pid)
-    print("subprocess %s, final process status: %s.\n" % (pid, status))
+    #print("subprocess %s, final process status: %s.\n" % (pid, status))
     # os.waitpid(p.pid, 0)
 
 
