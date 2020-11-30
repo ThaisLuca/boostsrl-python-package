@@ -96,7 +96,7 @@ def call_process(cmd):
         # Get process status to check in 'while' clause at start of next loop iteration.
 
     # Handle zombie processes in Linux (and MacOS?).
-    if os.name == 'posix' and pstatus == "zombie":
+    if os.name == 'posix' and status == "zombie":
         #print("subprocess %s, near-final process status: %s." % (pid, status))
         p.communicate()
 
