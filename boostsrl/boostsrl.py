@@ -5,8 +5,8 @@
 
    Name:         boostsrl.py
    Author:       Alexander L. Hayes
-   Modifier by:  Rodrigo Azevedo
-   Updated:      July 22, 2017
+   Modifier by:  Rodrigo Azevedo and Thais Luca
+   Updated:      December 06, 2020
    License:      GPLv3
 '''
 
@@ -126,33 +126,6 @@ def inspect_example_syntax(example):
     '''
     if not exam_re.search(example):
         raise(Exception('Error when checking example; incorrect syntax: ' + example))
-
-
-def write_to_file(content, path):
-    '''Takes a list (content) and a path/file (path) and writes each line of the list to the file location.'''
-    with open(path, 'w') as f:
-        for line in content:
-            f.write(line + '\n')
-    f.close()
-
-
-'''
-def build_bridges(target, bk):
-I'm experimenting with whether bridgers can be set automatically. I'll experiment with the ability here.
-    # Loop through the background information in order to find the target.
-    for pred in bk:
-        if (target + '(') in pred:
-            # Number of commas in the predicate changes the behavior of the querypred.
-            num_commas = pred.count(',')
-            if num_commas > 0:
-                print('querypred: ' + target + '/' + str(num_commas + 1))
-                break
-
-def save_model(model):
-    Take the trees from the current model and pickle them.
-    import cPickle as pickle
-    pass
-'''
 
 
 class modes(object):
