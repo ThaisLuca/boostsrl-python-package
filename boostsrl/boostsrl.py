@@ -237,7 +237,7 @@ class train(object):
         write_to_file(self.train_facts, 'boostsrl/train/train_facts.txt')
 
         combine = ''  # '-combine ' if self.trees > 1 else ''
-        refine = '-refine boostsrl/refine.txt ' if refine else ''
+        refine = '-refine boostsrl/refine.txt ' if refine is else ''
         transfer = '-transfer boostsrl/transfer.txt ' if transfer else ''
 
         CALL = 'java -jar boostsrl/v1-0.jar -l '
@@ -249,7 +249,6 @@ class train(object):
         CALL += '-train boostsrl/train/ -target ' + \
             ','.join(self.target) + ' -trees ' + str(self.trees) + \
                      ' > boostsrl/train_output.txt 2>&1'
-        print(CALL)
         call_process(CALL)
 
     def tree(self, treenumber, target, image=False):
