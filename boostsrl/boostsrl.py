@@ -237,7 +237,7 @@ class train(object):
         write_to_file(self.train_facts, 'boostsrl/train/train_facts.txt')
 
         combine = ''  # '-combine ' if self.trees > 1 else ''
-        refine = '-refine {} '.format(refine) if refine is else ''
+        refine = '-refine {} '.format(refine) if refine else ''
         transfer = '-transfer {} '.format(transfer) if transfer else ''
 
         CALL = 'java -jar boostsrl/v1-0.jar -l '
