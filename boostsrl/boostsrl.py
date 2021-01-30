@@ -249,7 +249,6 @@ class train(object):
         CALL += '-train boostsrl/train/ -target ' + \
             ','.join(self.target) + ' -trees ' + str(self.trees) + \
                      ' > boostsrl/train_output.txt 2>&1'
-        print(CALL)
         call_process(CALL)
 
     def tree(self, treenumber, target, image=False):
