@@ -69,41 +69,15 @@ def example_data(example):
     else:
         raise(Exception('Attempted to use sample data that does not exist.'))
 
-def get_proc_status(pid):
-    """Get the status of the process which has the specified process id."""
-
-    proc_status = None
-    try:
-        proc_status = psutil.Process(pid).status()
-    except psutil.NoSuchProcess as no_proc_exc:
-        print(no_proc_exc)
-    except psutil.ZombieProcess as zombie_proc_exc:  
-        # For Python 3.0+ in Linux (and MacOS?).
-        print(zombie_proc_exc)
-    return proc_status
-
 def call_process(cmd):
     '''Create a subprocess and wait for it to finish. Error out if errors occur.'''
-    p = subprocess.Popen(cmd, shell=True)
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
     pid = p.pid
 
-    status = get_proc_status(pid)
-    while status is not None and status != "zombie":
-        # The allowed set of statuses might differ on your system.
-        #print("subprocess %s, current process status: %s." % (pid, status))
-        time.sleep(1)  # Wait 1 second.
-        status = get_proc_status(pid)
-        # Get process status to check in 'while' clause at start of next loop iteration.
+    (output, err) = p.communicate()  
 
-    # Handle zombie processes in Linux (and MacOS?).
-    if os.name == 'posix' and status == "zombie":
-        #print("subprocess %s, near-final process status: %s." % (pid, status))
-        p.communicate()
-
-    status = get_proc_status(pid)
-    #print("subprocess %s, final process status: %s.\n" % (pid, status))
-    # os.waitpid(p.pid, 0)
-
+    #This makes the wait possible
+    p_status = p.wait()
 
 def inspect_mode_syntax(example):
     '''Uses a regular expression to check whether all of the examples in a list are in the correct form.
@@ -275,6 +249,7 @@ class train(object):
         CALL += '-train boostsrl/train/ -target ' + \
             ','.join(self.target) + ' -trees ' + str(self.trees) + \
                      ' > boostsrl/train_output.txt 2>&1'
+        print(CALL)
         call_process(CALL)
 
     def tree(self, treenumber, target, image=False):
